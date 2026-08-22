@@ -27,8 +27,6 @@ develop *args:
             $args
         }
 
-        print $shell "hello"
-
         ^nix develop --accept-flake-config $"($flake_dir)#($nix_shell)" --command ...$cmd
     }
 
@@ -36,7 +34,7 @@ develop *args:
 ci *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        just develop --shell="ci" ...$args
+        just develop --nix-shell="ci" ...$args
     }
 
 # Build the nixos configuration.

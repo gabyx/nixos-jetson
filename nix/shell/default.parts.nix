@@ -9,7 +9,7 @@
         ];
 
         shellHook = ''
-          just --list
+          [ "$CI" != "true"] || just --list
         '';
       };
     in
