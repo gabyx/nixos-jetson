@@ -14,6 +14,7 @@
             (lib.hiPrio pkgs.git)
             pkgs.git-lfs
             pkgs.bash
+            pkgs.nushell
 
             pkgs.coreutils
             pkgs.findutils
