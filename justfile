@@ -5,6 +5,8 @@ root_dir := justfile_directory()
 build_dir := root_dir / "build"
 shell := env("SHELL", "zsh")
 
+mod nix "./tools/just/nix.just"
+
 default:
     ^just --list
 
@@ -44,7 +46,7 @@ ci *args:
 build *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^just nix --subcmd=build ...$args
+        ^just nix-system --subcmd=build ...$args
     }
 
 # Eval the nixos configuration.
@@ -52,13 +54,13 @@ build *args:
 eval *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^just nix --subcmd=eval ...$args
+        ^just nix-system --subcmd=eval ...$args
     }
 
-# Build the NixOS.
+# Subcommand for the NixOS system attributes.
 [group("nixos")]
 [private]
-nix *args:
+nix-system *args:
     #!/usr/bin/env nu
     def --wrapped main [--subcmd="build" --host: string = "{{default_host}}" ...args: string] {
         let cmd = [

@@ -7,7 +7,7 @@
       # to install over `nix profile install` before
       # using `nix develop` which is the primary
       # thing used here.
-      modos.packages.global = {
+      packages = {
         bootstrap = pkgs.buildEnv {
           name = "bootstrap";
           paths = [
