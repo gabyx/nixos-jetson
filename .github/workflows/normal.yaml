@@ -20,6 +20,7 @@ jobs:
         run: just ci just eval
 
   build:
+    needs: eval
     runs-on: ubuntu-24.04-arm
     steps:
       - uses: actions/checkout@v6
