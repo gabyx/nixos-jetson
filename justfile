@@ -70,7 +70,7 @@ nix-system *args:
         print $"nix ($cmd | str join ' ')"
         print "----"
 
-        if (not ($env.CI? | default false)) and "{{use_nom}}" == "true" {
+        if ($env.CI? | default "false" == "false") and "{{use_nom}}" == "true" {
             ^nix ...$cmd --log-format internal-json o+e>| nom --json
         } else {
             ^nix ...$cmd
