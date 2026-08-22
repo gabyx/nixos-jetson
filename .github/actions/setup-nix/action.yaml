@@ -1,0 +1,14 @@
+name: "Setup Nix Environment"
+description: "Sets up Nix and Cachix"
+
+inputs: {}
+
+runs:
+  using: "composite"
+  steps:
+    - uses: NixOS/nix-installer-action@main
+    - uses: Mic92/hestia@v3
+
+    - name: bootstrap
+      run: nix profile install ".#bootstrap"
+      shell: bash

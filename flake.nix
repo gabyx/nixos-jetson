@@ -54,6 +54,13 @@
       url = "github:hercules-ci/flake-parts";
     };
 
+    # Nixpkgs (26.05 from the jetpack flake)
+    nixpkgs.url = "github:nixos/nixpkgs?rev=714a5f8c4ead6b31148d829288440ed033ccc041";
+
+    # Nixpkgs (unstable stuff for certain packages.)
+    # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+
     jetpack = {
       # Using `nix-systems` flake specification.
       url = "path:../..";
@@ -66,16 +73,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Nixpkgs (26.05 from the jetpack flake)
-    nixpkgs.url = "github:nixos/nixpkgs?rev=714a5f8c4ead6b31148d829288440ed033ccc041";
-
-    # Nixpkgs (unstable stuff for certain packages.)
-    # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
-
     # Some Hardware Modules.
     hardware = {
       url = "github:NixOS/nixos-hardware";
+    };
+
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
 }

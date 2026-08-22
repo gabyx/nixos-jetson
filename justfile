@@ -3,6 +3,7 @@ set dotenv-load := true
 set shell := ["nu", "--no-config-file", "-c"]
 root_dir := justfile_directory()
 build_dir := root_dir / "build"
+shell := env("SHELL", "zsh")
 
 default:
     ^just --list
@@ -17,15 +18,25 @@ alias dev := develop
 [group("dev")]
 develop *args:
     #!/usr/bin/env nu
-    def --wrapped main [...args: string] {
+    def --wrapped main [--nix-shell="default" ...args: string] {
         let flake_dir = "."
-        let shell = "default"
+        let shell = "{{shell}}"
         let cmd = if ($args | is-empty) {
-            [ env $"SHELL=($env.SHELL)" $env.SHELL ]
+            [ "env" $"SHELL=($shell)" $shell ]
         } else {
             $args
         }
-        ^nix develop --accept-flake-config $"($flake_dir)#($shell)" --command ...$cmd
+
+        print $shell "hello"
+
+        ^nix develop --accept-flake-config $"($flake_dir)#($nix_shell)" --command ...$cmd
+    }
+
+[group("ci")]
+ci *args:
+    #!/usr/bin/env nu
+    def --wrapped main [...args: string] {
+        just develop --shell="ci" ...$args
     }
 
 # Build the nixos configuration.
