@@ -5,7 +5,7 @@
     let
       default = pkgs.mkShellNoCC {
         packages = [
-          self'.bootstrap
+          self'.packages.bootstrap
         ];
 
         shellHook = ''

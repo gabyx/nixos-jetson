@@ -102,14 +102,18 @@
         "nixpkgs": "nixpkgs_2"
       },
       "locked": {
-        "path": "../..",
-        "type": "path"
+        "lastModified": 1787345970,
+        "narHash": "sha256-PZQNZJ0a7JWFpMKkojdfE9OlvtnF3gbDoVVGtAiEfg4=",
+        "owner": "anduril",
+        "repo": "jetpack-nixos",
+        "rev": "6e3abdd7aab85fa6bbced183dc2c1c65994774e3",
+        "type": "github"
       },
       "original": {
-        "path": "../..",
-        "type": "path"
-      },
-      "parent": []
+        "owner": "anduril",
+        "repo": "jetpack-nixos",
+        "type": "github"
+      }
     },
     "nixpkgs": {
       "locked": {
@@ -203,11 +207,11 @@
     "systems": {
       "flake": false,
       "locked": {
-        "path": "./flake/systems.nix",
+        "path": "./nix/flake/systems.nix",
         "type": "path"
       },
       "original": {
-        "path": "./flake/systems.nix",
+        "path": "./nix/flake/systems.nix",
         "type": "path"
       },
       "parent": []

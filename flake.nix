@@ -31,7 +31,7 @@
           (
             i:
             i [
-              ./.
+              ./nix
             ]
           );
     in
@@ -46,7 +46,7 @@
 
     systems = {
       # Using `nix-systems` flake specification.
-      url = "path:./flake/systems.nix";
+      url = "path:./nix/flake/systems.nix";
       flake = false;
     };
 
@@ -62,9 +62,7 @@
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     jetpack = {
-      # Using `nix-systems` flake specification.
-      url = "path:../..";
-      flake = false;
+      url = "github:anduril/jetpack-nixos";
     };
 
     # Declarative Disk partitioning for VMs.
