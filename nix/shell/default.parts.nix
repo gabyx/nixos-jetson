@@ -6,6 +6,8 @@
       default = pkgs.mkShellNoCC {
         packages = [
           self'.packages.bootstrap
+
+          pkgs.nix-output-monitor
         ];
 
         shellHook = ''
