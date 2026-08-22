@@ -5,8 +5,6 @@ root_dir := justfile_directory()
 build_dir := root_dir / "build"
 shell := env("SHELL", "zsh")
 
-mod nix "./tools/just/nix.just"
-
 default:
     ^just --list
 
