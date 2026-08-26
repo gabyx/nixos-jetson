@@ -22,6 +22,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04-arm
     environment: deploy
+    env:
+      CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix

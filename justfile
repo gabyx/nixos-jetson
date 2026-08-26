@@ -57,6 +57,7 @@ eval *args:
 upload *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
+        print "Set cachix token."
         ^cachix authtoken $env.CACHIX_AUTH_TOKEN
         print "Upload to nixos-jetson.cachix.org."
         ^just build ...$args | cachix push nixos-jetson
@@ -67,21 +68,30 @@ upload *args:
 [private]
 nix-system *args:
     #!/usr/bin/env nu
-    def --wrapped main [--subcmd="build" --host: string = "{{default_host}}" ...args: string] {
-        let cmd = [
+    def --wrapped main [
+        --subcmd="build"
+        --host: string = "{{default_host}}"
+        --use-nom = {{use_nom}}
+        ...args: string
+    ] {
+        mut cmd = [
             $subcmd
+            --accept-flake-config
             --verbose
-            --no-link
             --show-trace
-            --print-out-paths
-            $".#nixosConfigurations.($host).config.system.build.toplevel"
         ] | append $args
 
-        print "----"
-        print $"nix ($cmd | str join ' ')"
-        print "----"
+        if $subcmd == "build" {
+            $cmd = $cmd | append ["--no-link" "--print-out-paths"]
+        }
 
-        if ($env.CI? | default "false") == "false" and "{{use_nom}}" == "true" {
+        $cmd = $cmd | append $".#nixosConfigurations.($host).config.system.build.toplevel"
+
+        print -e "----"
+        print -e $"nix ($cmd | str join ' ')"
+        print -e "----"
+
+        if ($env.CI? | default "false") == "false" and $use_nom {
             ^nix ...$cmd --log-format internal-json o+e>| nom --json
         } else {
             ^nix ...$cmd

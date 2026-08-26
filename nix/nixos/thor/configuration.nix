@@ -7,4 +7,6 @@
     ./hardware.nix
     ./disks.nix
   ];
+
+  system.stateVersion = "26.05";
 }
