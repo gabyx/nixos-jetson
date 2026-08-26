@@ -53,6 +53,15 @@ eval *args:
         ^just nix-system --subcmd=eval ...$args
     }
 
+[group("ci")]
+upload *args:
+    #!/usr/bin/env nu
+    def --wrapped main [...args: string] {
+        ^cachix authtoken $env.CACHIX_AUTH_TOKEN
+        print "Upload to nixos-jetson.cachix.org."
+        ^just build ...$args | cachix push nixos-jetson
+    }
+
 # Subcommand for the NixOS system attributes.
 [group("nixos")]
 [private]
@@ -62,7 +71,9 @@ nix-system *args:
         let cmd = [
             $subcmd
             --verbose
+            --no-link
             --show-trace
+            --print-out-paths
             $".#nixosConfigurations.($host).config.system.build.toplevel"
         ] | append $args
 

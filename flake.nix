@@ -1,24 +1,18 @@
 {
-  description = "My NixOS Configurations";
+  description = "NixOS Jetson";
 
   nixConfig = {
-    substituters = [
-      # Replace the official cache with a mirror located in China
-      # Add here some other mirror if needed.
-      "https://cache.nixos.org/"
-    ];
     extra-substituters = [
-      # Nix community's cache server
+      "https://nixos-jetson.cachix.org"
       "https://nix-community.cachix.org"
     ];
     extra-trusted-public-keys = [
+      "nixos-jetson.cachix.org-1:tH3HqoxpZzF9tel7DgV2iOHFohD8swtQNrYK0XMBpRY="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
   };
 
   # We use flake-parts to assemble all flake outputs.
-  # This gives nicer modularity. All `.mod` files are
-  # `flake-parts` files.
   outputs =
     inputs:
     let

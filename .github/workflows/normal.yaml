@@ -16,14 +16,18 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
 
-      - name: Eval "jetson thor"
+      - name: Eval "jetson thor".
         run: just ci just eval --host=thor
 
   build:
     runs-on: ubuntu-24.04-arm
+    environment: deploy
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
 
-      - name: Build "jetson thor"
+      - name: Build "jetson thor".
         run: just ci just build --host=thor
+
+      - name: Upload to 'cachix'.
+        run: just ci just upload --host=thor
