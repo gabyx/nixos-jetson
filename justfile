@@ -2,6 +2,7 @@ set positional-arguments
 set dotenv-load := true
 set shell := ["nu", "--no-config-file", "-c"]
 root_dir := justfile_directory()
+output_dir := root_dir / ".output"
 build_dir := root_dir / "build"
 shell := env("SHELL", "zsh")
 
@@ -10,6 +11,7 @@ default:
 
 # The host for which most commands work below.
 default_nixos_config := env("NIXOS_CONFIG", "thor-devkit")
+
 # If the nix-output-monitor should be used.
 use_nom := env("USE_NOM", "true")
 
@@ -42,7 +44,7 @@ ci *args:
 build *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^just nix-system --subcmd=build ...$args
+        ^just nix --subcmd=build ...$args
     }
 
 # Eval the nixos configuration.
@@ -50,7 +52,7 @@ build *args:
 eval *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^just nix-system --subcmd=eval ...$args
+        ^just nix --subcmd=eval ...$args
     }
 
 [group("ci")]
@@ -66,11 +68,12 @@ upload *args:
 # Subcommand for the NixOS system attributes.
 [group("nixos")]
 [private]
-nix-system *args:
+nix *args:
     #!/usr/bin/env nu
     def --wrapped main [
         --subcmd="build"
         --nixos: string = "{{default_nixos_config}}"
+        --iso
         --use-nom = {{use_nom}}
         ...args: string
     ] {
@@ -81,11 +84,23 @@ nix-system *args:
             --show-trace
         ] | append $args
 
-        if $subcmd == "build" {
-            $cmd = $cmd | append ["--no-link" "--print-out-paths"]
+        mut attr = $"nixosConfigurations.($nixos).config.system.build.toplevel"
+        if $iso {
+            $attr = $"($nixos)-iso"
         }
 
-        $cmd = $cmd | append $".#nixosConfigurations.($nixos).config.system.build.toplevel"
+        if $subcmd == "build" {
+            $cmd = $cmd | append [
+                "--out-link" $"{{output_dir}}/($attr)"
+                "--print-out-paths"
+            ]
+        }
+
+        if $iso and not ($nixos | str contains "-installer") {
+            error make {msg: "You cannot only build ISO's for installers."}
+        }
+
+        $cmd = $cmd | append $".#($attr)"
 
         print -e "----"
         print -e $"nix ($cmd | str join ' ')"

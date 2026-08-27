@@ -22,10 +22,10 @@ Run `just` to list all targets.
 
 ### Build
 
-Build the NixOS configuration for the default configuration (`thor-devkit`):
+Build the NixOS configuration into `.output`:
 
 ```bash
-just build [--nixos=thor-devkit] [... extra nix args ...]
+just build [--nixos=thor-devkit] [--iso] [... extra nix args ...]
 ```
 
 The following configurations are exposed:
@@ -35,7 +35,11 @@ The following configurations are exposed:
 
 > [!NOTE]
 >
-> Add `-cross` to all of the above configurations to do a cross-compile from `x86_64-linux` to `aarch64-linux`.
+> Add `-cross` to all of the above configuration names to do a cross-compile from `x86_64-linux` to `aarch64-linux`.
+
+> [!NOTE]
+>
+> Add the `--iso` flag to all `*-installers` configurations to build the ISO image.
 
 ### Eval
 

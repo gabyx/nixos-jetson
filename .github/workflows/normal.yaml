@@ -12,28 +12,57 @@ concurrency:
 jobs:
   eval:
     runs-on: ubuntu-24.04-arm
+    strategy:
+      fail-fast: false
+      matrix:
+        nixos:
+          - thor-devkit
+          - thor-devkit-installer
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
 
       - name: Eval "jetson thor".
-        run: just ci just eval --host=thor
+        run: just ci just build --nixos=${{ matrix.nixos }}
 
   build:
     runs-on: ubuntu-24.04-arm
     environment: deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        nixos:
+          - thor-devkit
     env:
       CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
 
-      - name: Build "jetson thor"'s matching minimal installer ISO".
-        run: just ci just build --host=thor-devkit-installer
-      - name: Upload to 'cachix'.
-        run: just ci just upload --host=thor-devkit-installer
+      - name: Build "${{ matrix.nixos }}".
+        run: just ci just build --nixos=${{ matrix.nixos }}
 
-      - name: Build "jetson thor NixOS".
-        run: just ci just build --host=thor-devkit
       - name: Upload to 'cachix'.
-        run: just ci just upload --host=thor-devkit
+        if: github.ref == 'refs/heads/main'
+        run: just ci just upload --nixos=${{ matrix.nixos }}
+
+  build-iso:
+    runs-on: ubuntu-24.04-arm
+    environment: deploy
+    strategy:
+      fail-fast: false
+      matrix:
+        nixos:
+          - thor-devkit-installer
+    env:
+      CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-nix
+
+      - name: Build "${{ matrix.nixos }}".
+        run: just ci just build --nixos=${{ matrix.nixos }} --iso
+
+      - name: Upload to 'cachix'.
+        if: github.ref == 'refs/heads/main'
+        run: just ci just upload --nixos=${{ matrix.nixos }} --iso
