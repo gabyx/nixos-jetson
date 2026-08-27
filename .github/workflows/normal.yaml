@@ -28,8 +28,12 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
 
-      - name: Build "jetson thor".
-        run: just ci just build --host=thor
-
+      - name: Build "jetson thor"'s matching minimal installer ISO".
+        run: just ci just build --host=thor-devkit-installer
       - name: Upload to 'cachix'.
-        run: just ci just upload --host=thor
+        run: just ci just upload --host=thor-devkit-installer
+
+      - name: Build "jetson thor NixOS".
+        run: just ci just build --host=thor-devkit
+      - name: Upload to 'cachix'.
+        run: just ci just upload --host=thor-devkit

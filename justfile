@@ -9,7 +9,7 @@ default:
     ^just --list
 
 # The host for which most commands work below.
-default_host := env("NIXOS_HOST", "thor")
+default_nixos_config := env("NIXOS_CONFIG", "thor-devkit")
 # If the nix-output-monitor should be used.
 use_nom := env("USE_NOM", "true")
 
@@ -70,7 +70,7 @@ nix-system *args:
     #!/usr/bin/env nu
     def --wrapped main [
         --subcmd="build"
-        --host: string = "{{default_host}}"
+        --nixos: string = "{{default_nixos_config}}"
         --use-nom = {{use_nom}}
         ...args: string
     ] {
@@ -85,7 +85,7 @@ nix-system *args:
             $cmd = $cmd | append ["--no-link" "--print-out-paths"]
         }
 
-        $cmd = $cmd | append $".#nixosConfigurations.($host).config.system.build.toplevel"
+        $cmd = $cmd | append $".#nixosConfigurations.($nixos).config.system.build.toplevel"
 
         print -e "----"
         print -e $"nix ($cmd | str join ' ')"

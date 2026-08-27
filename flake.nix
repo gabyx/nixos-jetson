@@ -65,7 +65,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # Some Hardware Modules.
+    # Hardware modules.
     hardware = {
       url = "github:NixOS/nixos-hardware";
     };
