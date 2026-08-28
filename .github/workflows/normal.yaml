@@ -81,15 +81,17 @@ jobs:
       - uses: ./.github/actions/setup-nix
 
       - name: Build "${{ matrix.nixos }}".
+        if: github.ref != 'refs/heads/main'
         run: |
           just ci just build \
             --nixos=${{ matrix.nixos }} \
             --cross=${{ matrix.cross }} \
             --installer=${{ matrix.installer }}
 
-      - name: Upload to 'cachix'.
+      - name: Build '${{ matrix.nixos }}' & Upload to 'cachix'.
         if: github.ref == 'refs/heads/main'
         run: |
           just ci just upload \
           --nixos=${{ matrix.nixos }} \
           --cross=${{ matrix.cross }} \
+          --installer=${{ matrix.installer }}
