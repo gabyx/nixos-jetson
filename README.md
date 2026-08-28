@@ -59,7 +59,7 @@ and create a link in `.output/...`
 just pull [--nixos=thor-devkit] --installer [--cross] [... extra nix args ...]
 ```
 
-> [!EXAMPLE]
+> [!NOTE]
 >
 > Pulling the `aarch64-linux` installer ISO image for `thor-devkit` with
 > `just pull --nixos=thor-devkit --installer`.
