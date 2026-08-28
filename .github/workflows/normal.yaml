@@ -38,8 +38,6 @@ jobs:
   build:
     name: build ${{ matrix.nixos }} (installer=${{ matrix.installer }}, cross=${{ matrix.cross }})
     runs-on: ${{ matrix.cross == 'false' && 'ubuntu-latest' || 'ubuntu-24.04-arm' }}
-    # Cross builds are best-effort — allow them to fail without failing the workflow.
-    continue-on-error: ${{ matrix.cross == 'true' }}
 
     environment: deploy
     strategy:
@@ -60,16 +58,25 @@ jobs:
       - uses: ./.github/actions/setup-nix
 
       - name: Build "${{ matrix.nixos }}".
+        id: build
+        # Cross builds are best-effort: a failure here is downgraded to a
+        # warning (see below) instead of failing the job with a red ✗.
+        continue-on-error: ${{ matrix.cross == 'true' }}
+
         run: |
           just ci just build \
-          --nixos=${{ matrix.nixos }} \
-          --cross=${{ matrix.cross }} \
-          --installer=${{ matrix.installer }}
+            --nixos=${{ matrix.nixos }} \
+            --cross=${{ matrix.cross }} \
+            --installer=${{ matrix.installer }}
+
+      - name: Warn on failed cross build.
+        if: matrix.cross == 'true' && steps.build.outcome == 'failure'
+        run: |
+          echo "::warning title=Cross build failed::Best-effort cross build for ${{ matrix.nixos }} (installer=${{ matrix.installer }}) failed and was ignored."
 
       - name: Upload to 'cachix'.
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.build.outcome == 'success'
         run: |
           just ci just upload \
           --nixos=${{ matrix.nixos }} \
           --cross=${{ matrix.cross }} \
-          --installer=${{ matrix.installer }}
