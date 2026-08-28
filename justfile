@@ -32,6 +32,13 @@ develop *args:
         ^nix develop --accept-flake-config $"($flake_dir)#($nix_shell)" --command ...$cmd
     }
 
+[group("lint")]
+format *args:
+    #!/usr/bin/env nu
+    def --wrapped main [...args: string] {
+        ^nix fmt ...$args
+    }
+
 [group("ci")]
 ci *args:
     #!/usr/bin/env nu

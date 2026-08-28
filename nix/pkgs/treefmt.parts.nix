@@ -7,15 +7,11 @@
   perSystem =
     {
       config,
-      inputs',
       pkgsUnstable,
       ...
     }:
     let
-      pkgs = pkgsUnstable // {
-        nixfmt = inputs'.nixfmt-rs.packages.default;
-      };
-
+      pkgs = pkgsUnstable;
       treefmt = config.treefmt.build.wrapper;
     in
     {

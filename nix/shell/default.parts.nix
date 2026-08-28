@@ -8,11 +8,17 @@
           self'.packages.bootstrap
 
           pkgs.nix-output-monitor
+          pkgs.prek
         ];
 
-        shellHook = ''
-          [ "$CI" != "true" ] || just --list
-        '';
+        shellHook =
+          # Bash
+          ''
+            [ "''${CI:-}" == "true" ] || {
+              just --list
+              prek install -c ./tools/configs/prek/prek.toml --overwrite
+            }
+          '';
       };
     in
     {
