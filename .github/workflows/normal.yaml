@@ -41,7 +41,7 @@ jobs:
 
   build:
     name: build ${{ matrix.nixos }} (installer=${{ matrix.installer }}, cross=${{ matrix.cross }})
-    runs-on: ${{ matrix.cross == 'false' && 'ubuntu-latest' || 'ubuntu-24.04-arm' }}
+    runs-on: ${{ matrix.cross == 'true' && 'ubuntu-latest' || 'ubuntu-24.04-arm' }}
 
     environment: deploy
     strategy:
@@ -73,7 +73,7 @@ jobs:
             --installer=${{ matrix.installer }}
 
       - name: Upload to 'cachix'.
-        if: github.ref == 'refs/heads/main' && steps.build.outcome == 'success'
+        if: github.ref == 'refs/heads/main'
         run: |
           just ci just upload \
           --nixos=${{ matrix.nixos }} \

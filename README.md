@@ -1,7 +1,8 @@
 # NixOS Jetson
 
 NixOS configuration for NVIDIA Jetson devices, built with
-[flake-parts](https://flake.parts) and [jetpack-nixos](https://github.com/anduril/jetpack-nixos).
+[flake-parts](https://flake.parts) and
+[jetpack-nixos](https://github.com/anduril/jetpack-nixos) for more information.
 
 ## Preliminaries
 
@@ -39,6 +40,8 @@ The following configurations are exposed:
 > [!NOTE]
 >
 > Add the `--installer` flag to build the ISO image of the NixOS configuration.
+> Installer ISO's are matching installers and not the system, it needs still a
+> `nixos-rebuild switch .#thor-devkit`.
 
 ### Eval
 
@@ -67,6 +70,10 @@ just pull [--nixos=thor-devkit] --installer [--cross] [... extra nix args ...]
 Prebuilt artifacts in CI are published to
 [nixos-jetson.cachix.org](https://app.cachix.org/cache/nixos-jetson). The cache is already
 configured in `flake.nix` (`nixConfig`), so `just build|pull` uses it automatically.
+
+## TODO
+
+- Its weird why the `just eval --nixos=thor-devkit --cross` does not eval on a `x86_64-linux` since there are some evaluation guards in some CUDA modules. Why should evaluation have a problem with a cross configuration? It only evaluates on a
 
 ## License
 

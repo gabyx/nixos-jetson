@@ -98,7 +98,6 @@ nix *args:
         mut cmd = [
             $subcmd
             --accept-flake-config
-            --verbose
             --show-trace
         ] | append $args
 
@@ -134,7 +133,10 @@ nix *args:
         }
 
         if $subcmd == "build" {
-            $cmd = $cmd | append [ "--print-out-paths" ]
+            $cmd = $cmd | append [
+                "--print-out-paths"
+                "-L" # Show build log.
+            ]
         }
 
         if $subcmd == "build" or $subcmd == "copy" {
