@@ -51,7 +51,6 @@ let
 
         # Set special arguments to the modules.
         specialArgs = {
-          system = jetsonSystem;
           inherit
             inputs
             self
