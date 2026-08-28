@@ -13,6 +13,8 @@ Then enter the repo and allow the environment (loads the Nix devShell with all t
 ```bash
 cp .env.tmpl .env   # optional: adjust DEFAULT_NIXOS_CONFIG / USE_NOM
 direnv allow
+# or
+just develop
 ```
 
 ## How To
