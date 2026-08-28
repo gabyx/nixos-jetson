@@ -1,5 +1,6 @@
 result
 build
+.claude
 .env
 .direnv
 .devenv
