@@ -11,28 +11,48 @@ concurrency:
 
 jobs:
   eval:
-    runs-on: ubuntu-24.04-arm
+    name: eval ${{ matrix.nixos }} (installer=${{ matrix.installer }}, cross=${{ matrix.cross }})
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         nixos:
           - thor-devkit
-          - thor-devkit-installer
+        installer:
+          - "true"
+          - "false"
+        cross:
+          - "true"
+          - "false"
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-nix
 
       - name: Eval "jetson thor".
-        run: just ci just build --nixos=${{ matrix.nixos }}
+        run: |
+          just ci just eval \
+            --nixos=${{ matrix.nixos }} \
+            --cross=${{ matrix.cross }} \
+            --installer=${{ matrix.installer }}
 
   build:
-    runs-on: ubuntu-24.04-arm
+    name: build ${{ matrix.nixos }} (installer=${{ matrix.installer }}, cross=${{ matrix.cross }})
+    runs-on: ${{ matrix.cross == 'false' && 'ubuntu-latest' || 'ubuntu-24.04-arm' }}
+    # Cross builds are best-effort — allow them to fail without failing the workflow.
+    continue-on-error: ${{ matrix.cross == 'true' }}
+
     environment: deploy
     strategy:
       fail-fast: false
       matrix:
         nixos:
           - thor-devkit
+        installer:
+          - "true"
+          - "false"
+        cross:
+          - "true"
+          - "false"
     env:
       CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
     steps:
@@ -40,29 +60,16 @@ jobs:
       - uses: ./.github/actions/setup-nix
 
       - name: Build "${{ matrix.nixos }}".
-        run: just ci just build --nixos=${{ matrix.nixos }}
+        run: |
+          just ci just build \
+          --nixos=${{ matrix.nixos }} \
+          --cross=${{ matrix.cross }} \
+          --installer=${{ matrix.installer }}
 
       - name: Upload to 'cachix'.
         if: github.ref == 'refs/heads/main'
-        run: just ci just upload --nixos=${{ matrix.nixos }}
-
-  build-iso:
-    runs-on: ubuntu-24.04-arm
-    environment: deploy
-    strategy:
-      fail-fast: false
-      matrix:
-        nixos:
-          - thor-devkit-installer
-    env:
-      CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_AUTH_TOKEN }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-nix
-
-      - name: Build "${{ matrix.nixos }}".
-        run: just ci just build --nixos=${{ matrix.nixos }} --iso
-
-      - name: Upload to 'cachix'.
-        if: github.ref == 'refs/heads/main'
-        run: just ci just upload --nixos=${{ matrix.nixos }} --iso
+        run: |
+          just ci just upload \
+          --nixos=${{ matrix.nixos }} \
+          --cross=${{ matrix.cross }} \
+          --installer=${{ matrix.installer }}

@@ -25,42 +25,48 @@ Run `just` to list all targets.
 Build the NixOS configuration into `.output`:
 
 ```bash
-just build [--nixos=thor-devkit] [--iso] [... extra nix args ...]
+just build [--nixos=thor-devkit] [--installer] [--cross] [... extra nix args ...]
 ```
 
 The following configurations are exposed:
 
 - `thor-devkit`: A NixOS configuration for the `thor` device with carrier board `devkit`.
-- `thor-devkit-installer`: The minimal installer ISO matching the `thor-devkit` system.
 
 > [!NOTE]
 >
-> Add `-cross` to all of the above configuration names to do a cross-compile from `x86_64-linux` to `aarch64-linux`.
+> Add the `--cross` flag to build the cross-compiled derivation from `x86_64-linux` to `aarch64-linux`.
 
 > [!NOTE]
 >
-> Add the `--iso` flag to all `*-installers` configurations to build the ISO image.
+> Add the `--installer` flag to build the ISO image of the NixOS configuration.
 
 ### Eval
 
 Evaluate the NixOS configuration without building:
 
 ```bash
-just eval [--nixos=thor-devkit] [... extra nix args ...]
+just eval [--nixos=thor-devkit] [--installer] [--cross] [... extra nix args ...]
 ```
+
+### Pulling from the Cache
+
+Pull the CI build derivations (only works for `--installer`) into your Nix store by
+and create a link in `.output/...`
+
+```bash
+just pull [--nixos=thor-devkit] --installer [--cross] [... extra nix args ...]
+```
+
+> [!EXAMPLE]
+>
+> Pulling the `aarch64-linux` installer ISO image for `thor-devkit` with
+> `just pull --nixos=thor-devkit --installer`.
 
 ### Download from the Cachix cache
 
 Prebuilt artifacts in CI are published to
 [nixos-jetson.cachix.org](https://app.cachix.org/cache/nixos-jetson). The cache is already
-configured in `flake.nix` (`nixConfig`), so `just build` uses it automatically when you
-pass `--accept-flake-config`.
-
-To use it outside the flake, install [`cachix`](https://docs.cachix.org/installation) and run:
-
-```bash
-cachix use nixos-jetson
-```
+configured in `flake.nix` (`nixConfig`), so `just build|pull` uses it automatically.
 
 ## License
 

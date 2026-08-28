@@ -39,12 +39,20 @@ ci *args:
         just develop --nix-shell="ci" ...$args
     }
 
+[group("nix")]
+show *args:
+    #!/usr/bin/env nu
+    def --wrapped main [...args: string] {
+        print -e "Flake Outputs:"
+        ^nix flake show --all-systems --legacy e> /dev/null
+    }
+
 # Build the nixos configuration.
 [group("nixos")]
 build *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^just nix --subcmd=build ...$args
+        ^just nix build ...$args
     }
 
 # Eval the nixos configuration.
@@ -52,8 +60,16 @@ build *args:
 eval *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^just nix --subcmd=eval ...$args
+        ^just nix eval ...$args
     }
+
+[group("nixos")]
+pull *args:
+    #!/usr/bin/env nu
+    def --wrapped main [...args: string] {
+        ^just nix copy ...$args
+    }
+
 
 [group("ci")]
 upload *args:
@@ -71,12 +87,14 @@ upload *args:
 nix *args:
     #!/usr/bin/env nu
     def --wrapped main [
-        --subcmd="build"
+        subcmd="build"
         --nixos: string = "{{default_nixos_config}}"
-        --iso
+        --cross
+        --installer
         --use-nom = {{use_nom}}
         ...args: string
     ] {
+        mut nixos = $nixos
         mut cmd = [
             $subcmd
             --accept-flake-config
@@ -84,23 +102,46 @@ nix *args:
             --show-trace
         ] | append $args
 
-        mut attr = $"nixosConfigurations.($nixos).config.system.build.toplevel"
-        if $iso {
-            $attr = $"($nixos)-iso"
+        mut attr = ""
+
+        if $installer {
+            $nixos = $nixos + "-installer"
+        }
+        if $cross {
+            $nixos = $nixos + "-cross"
+        }
+
+        if $installer {
+            mut system = "aarch64-linux"
+            if $cross {
+                $system = "x86_64-linux"
+            }
+            $attr = $"packages.($system).($nixos)-iso"
+        } else {
+            $attr = $"nixosConfigurations.($nixos).config.system.build.toplevel"
+        }
+
+        if $subcmd == "copy" {
+            print -e $"Evaluate '($attr)'..."
+            let $derivation = ^nix eval $".#($attr)" --json | from json
+
+            $cmd = $cmd | append [
+                "--from" "https://nixos-jetson.cachix.org"
+                "--extra-trusted-public-keys" "nixos-jetson.cachix.org-1:tH3HqoxpZzF9tel7DgV2iOHFohD8swtQNrYK0XMBpRY="
+                $derivation]
+        } else {
+            $cmd = $cmd | append [ (".#" + $attr) ]
         }
 
         if $subcmd == "build" {
+            $cmd = $cmd | append [ "--print-out-paths" ]
+        }
+
+        if $subcmd == "build" or $subcmd == "copy" {
             $cmd = $cmd | append [
                 "--out-link" $"{{output_dir}}/($attr)"
-                "--print-out-paths"
             ]
         }
-
-        if $iso and not ($nixos | str contains "-installer") {
-            error make {msg: "You cannot only build ISO's for installers."}
-        }
-
-        $cmd = $cmd | append $".#($attr)"
 
         print -e "----"
         print -e $"nix ($cmd | str join ' ')"
