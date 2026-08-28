@@ -36,7 +36,7 @@ develop *args:
 format *args:
     #!/usr/bin/env nu
     def --wrapped main [...args: string] {
-        ^nix fmt ...$args
+        ^nix fmt -- ...$args
     }
 
 [group("ci")]
