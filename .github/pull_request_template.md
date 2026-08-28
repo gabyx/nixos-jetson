@@ -11,8 +11,7 @@ Assisted-by:
 
 ## Types of Changes
 
-What types of changes does your contribution introduce? _Put an `x` in the boxes
-that apply_
+What types of changes does your contribution introduce?
 
 - [ ] A **bug fix** (non-breaking change which fixes an issue). Use MR tag
       `bugfix`.
@@ -24,11 +23,6 @@ that apply_
       other choices apply). Use MR tag `chore`.
 
 ## Checklist
-
-_Put an `x` in the boxes that apply. You can also fill these out after creating
-the PR. If you're unsure about any of them, don't hesitate to ask. We're here to
-help! This is simply a reminder of what we are going to look for before merging
-your code._
 
 - [ ] I have read the
       [CONTRIBUTING](https://github.com/swissdatasciencecenter/my-project/tree/main/CONTRIBUTING.md)
