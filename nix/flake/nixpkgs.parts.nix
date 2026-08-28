@@ -7,12 +7,6 @@ let
 
   config = {
     allowUnfree = true;
-
-    permittedInsecurePackages = [
-      "electron-39.8.10"
-    ];
-
-    nvidia.acceptLicense = true;
   };
 
   stable =
@@ -45,7 +39,5 @@ in
     {
       _module.args.pkgs = pkgs;
       _module.args.pkgsUnstable = pkgsUnstable;
-
-      legacyPackages.unstable = pkgsUnstable;
     };
 }

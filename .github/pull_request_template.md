@@ -24,9 +24,7 @@ What types of changes does your contribution introduce?
 
 ## Checklist
 
-- [ ] I have read the
-      [CONTRIBUTING](https://github.com/swissdatasciencecenter/my-project/tree/main/CONTRIBUTING.md)
-      guidelines.
+- [ ] I have read the [CONTRIBUTING](CONTRIBUTING.md) guidelines.
 
 ## Further Comments
 
